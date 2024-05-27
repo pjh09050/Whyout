@@ -73,7 +73,6 @@ def recommend_all(total_sgd_preds, user_id, total_df, ratings_df, idx, num_recom
     if user_id in idx['idx'].values:
         print(f'{user_id}번 유저의 행동이 있습니다.')
         user_index = int(idx[idx['idx'] == user_id].iloc[:,2])
-        #print('user_index:', user_index)
 
         # 원본 평점 데이터에서 user_id에 해당하는 행을 DataFrame으로 가져온다.
         user_data = ratings_df.loc[user_index]
@@ -107,7 +106,7 @@ def item_latent_cos(user_id, item, case2_dict, num_recommendations):
         non_zero_columns = all_item[all_item != 0].index.tolist()
         select_item = int(random.choice(non_zero_columns))
         cosine_sim_matrix = cosine_similarity(case2_dict[item][5]) # user_latent에 대한 코사인 유사도 계산
-        cosine_sim_df = pd.DataFrame(cosine_sim_matrix, index=case2_dict[item][5].index, columns=case2_item_latent_video.index)
+        cosine_sim_df = pd.DataFrame(cosine_sim_matrix, index=case2_dict[item][5].index, columns=case2_dict[item][5].index)
         user_similarities = cosine_sim_df.loc[select_item] # user_id의 코사인 유사도 값을 가져옴
         user_similarities[select_item] = -1 # user_id를 선택하지 않도록 -1을 해줌
         sorted_user_similarities = user_similarities.sort_values(ascending=False) # 유사도가 높은 순으로 정렬

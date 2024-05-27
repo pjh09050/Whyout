@@ -48,7 +48,7 @@ def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_
         cosine_sim_matrix = cosine_similarity([new_data], combined_interest_matrix) # 새로운 데이터와의 코사인 유사도 계산
         sorted_indices = np.argsort(-cosine_sim_matrix[0])
         sorted_similarity_scores = cosine_sim_matrix[0][sorted_indices]
-        print(sorted_indices, sorted_similarity_scores)
+
         # 기존 아이템에 행동이 존재하는지 확인
         user_id, similarity_score = None, None
         for i, s in list(zip(sorted_indices, sorted_similarity_scores)): # (user_id의 index, 코사인 유사도 값)
