@@ -23,16 +23,16 @@ def recommend_step1(item, sgd_preds, user_id, item_df, ratings_df, ratings_df_id
 
 def item_user_latent_cos(user_id, original_item, item_list, dict):
     print('유사도 선택시 item_list:', item_list)
-    if user_id in dict[item_list[0]][3]['idx'].values:
-        item = item_list[0]
-        print(f'user {user_id}는 {item}에 대한 행동이 존재함')
-    elif user_id in dict[item_list[1]][3]['idx'].values:
-        item = item_list[1]
-        print(f'user {user_id}는 {item}에 대한 행동이 존재함')
-    else:
-        """
-        모든 아이템에 대한 행동이 없는 유저에게 추천하는 함수 추가 
-        """
+    exist_action = False
+    item = ''
+    for item_category in item_list:
+        if user_id in dict[item_category][3]['idx'].values:
+            exist_action = True
+            item = item_category
+            print(f'user {user_id}는 {item_category}에 대한 행동이 존재함')
+            break
+    if exist_action is False:
+        """ 모든 아이템에 대한 행동이 없는 유저에게 추천하는 함수 추가? """
         print(f'user {user_id}는 모든 아이템에 대한 행동이 없음')
 
     print(f'2. {item} user latent에서 user {user_id}과 유사한 user 찾기')
@@ -62,7 +62,7 @@ def item_user_latent_cos(user_id, original_item, item_list, dict):
     return new_user_id
 
 
-def recommendation_system(user_id, item, item_list, dict, num_recommendations):
+def get_recommended_items(user_id, item, item_list, dict, num_recommendations):
     if user_id in dict[item][3]['idx'].values:
         recomm_list = recommend_step1(item, dict[item][0], user_id, dict[item][1], dict[item][2], dict[item][3], num_recommendations)
         # print(f"1. user {user_id}에게 추천해줄 {10}개 {item} idx : {recomm_list}")
