@@ -4,9 +4,9 @@ from load_data import *
 import warnings
 warnings.filterwarnings("ignore")
 
-user_id = 7
+user_id = 38000
 new_user_item = [1,0,1]
-new_user_outdoor = [0,0,0,0,0,0,0,0,0,1]
+new_user_outdoor = [0,1,0,0,0,0,0,0,0,1]
 num_recommendations = 10
 case2_dict = { 'place' : [case2_sgd_rating_place, place, case2_user_place, case2_user_place_idx, 
                           case2_user_latent_place, case2_item_latent_place, user_place],

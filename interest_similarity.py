@@ -19,7 +19,11 @@ def vectorize_item(interests):
 def make_user_interest(user_interest):
     df_filled = user_interest.fillna(0) # NaN 값을 0으로 대체
 
-    # 관심 아이템, 아웃도어 벡터화
+    # 관심 아이템, 아웃도어 컬럼의 문자열을 리스트로 변환
+    df_filled['관심 아이템'] = df_filled['관심 아이템'].apply(lambda x: eval(x) if isinstance(x, str) else x)
+    df_filled['관심 아웃도어'] = df_filled['관심 아웃도어'].apply(lambda x: eval(x) if isinstance(x, str) else x)
+    
+    # 관심 아이템, 아웃도어 0값 기존 차원과 동일하게 맞추기
     df_filled['관심 아이템'] = df_filled['관심 아이템'].apply(vectorize_item)
     df_filled['관심 아웃도어'] = df_filled['관심 아웃도어'].apply(vectorize_outdoor)
 
@@ -31,7 +35,7 @@ def make_user_interest(user_interest):
 def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_interest):
     df_features = make_user_interest(user_interest) # 기존 유저의 관심 아이템 + 관심 아웃도어의 전처리 작업
     new_data = item_interest + outdoor_interest # 새로운 유저의 관심 아이템 + 관심 아웃도어를 하나의 차원으로 변경
-    
+
     # 신규 유저와 기존 유저의 관심 항목이 같은지 확인
     exact_match_indices = []
     for index, row in df_features.iterrows():
@@ -44,7 +48,7 @@ def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_
         cosine_sim_matrix = cosine_similarity([new_data], combined_interest_matrix) # 새로운 데이터와의 코사인 유사도 계산
         sorted_indices = np.argsort(-cosine_sim_matrix[0])
         sorted_similarity_scores = cosine_sim_matrix[0][sorted_indices]
-
+        print(sorted_indices, sorted_similarity_scores)
         # 기존 아이템에 행동이 존재하는지 확인
         user_id, similarity_score = None, None
         for i, s in list(zip(sorted_indices, sorted_similarity_scores)): # (user_id의 index, 코사인 유사도 값)
@@ -54,7 +58,7 @@ def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_
                 similarity_score = s
                 break
             else:
-                print(f'모든 유저가 {item}에 대한 행동이 없습니다.')
+                print(f'유저 {user_index}가 {item}에 대한 행동이 없습니다.')
         print(f"{item}에 행동이 존재하며 유사도가 가장 높은 인덱스는 {user_id}이며, 유사도 점수는 {similarity_score}입니다.")
     else:
         # 관심항목이 정확히 일치하는 user_id에서 기존에 추천하려는 item에 행동이 있는지 확인
@@ -70,5 +74,20 @@ def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_
             user_id = int(user_interest[user_interest.index == user_actions.idxmax()].iloc[:,0]) # 가장 행동이 많은 user_id를 뽑음
             print(f'{item}에 대한 행동이 가장 많은 유저 : user {user_id}')
         else:
-            print(f'모든 유저가 {item}에 대한 행동이 없습니다')
+            combined_interest_matrix = np.array(df_features['Combined_Interest'].tolist()) # 코사인 유사도를 계산하기 위해 데이터프레임 변환
+            cosine_sim_matrix = cosine_similarity([new_data], combined_interest_matrix) # 새로운 데이터와의 코사인 유사도 계산
+            sorted_indices = np.argsort(-cosine_sim_matrix[0])
+            sorted_similarity_scores = cosine_sim_matrix[0][sorted_indices]
+
+            # 기존 아이템에 행동이 존재하는지 확인
+            user_id, similarity_score = None, None
+            for i, s in list(zip(sorted_indices, sorted_similarity_scores)): # (user_id의 index, 코사인 유사도 값)
+                user_index = int(user_interest[user_interest.index == i].iloc[:,0]) # user_id의 idx(key)값 가져오기
+                if user_index in case2_dict[item][3]['idx'].values: # key값이 원래 추천하려는 아이템에 존재한다면 if
+                    user_id = user_index
+                    similarity_score = s
+                    break
+                else:
+                    print(f'모든 유저가 {item}에 대한 행동이 없습니다.')
+            print(f"{item}에 행동이 존재하며 유사도가 가장 높은 인덱스는 {user_id}이며, 유사도 점수는 {similarity_score}입니다.")
     return user_id
