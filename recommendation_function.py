@@ -1,6 +1,6 @@
 import pandas as pd
-import warnings
 from sklearn.metrics.pairwise import cosine_similarity
+import warnings
 warnings.filterwarnings("ignore")
 
 def recommend_step1(item, user_id, case2_dict, num_recommendations):
@@ -43,10 +43,10 @@ def item_user_latent_cos(user_id, original_item, item_list, case2_dict):
     # 유사도가 높은 유저를 순서대로 기존의 추천하려는 아이템에 행동이 있는지 확인
     for i in range(len(sorted_user_similarities)):
         most_similar_user_id = sorted_user_similarities.index[i]
+        new_user_id = int(case2_dict[item][3][case2_dict[item][3].iloc[:,3] == most_similar_user_id].iloc[:,0])
         highest_similarity_score = sorted_user_similarities.iloc[i]
         if new_user_id in case2_dict[original_item][3]['idx'].values: # 기존에 추천하려는 아이템에 행동이 있다면 new_user_id의 idx(key)값을 가져옴
             new_user_id = int(case2_dict[item][3][case2_dict[item][3].iloc[:,3] == most_similar_user_id].iloc[:,0]) # new_user_idx 찾기
-            print('update new_user_id:', new_user_id)
             break
         else:
             print(f'{new_user_id}가 {original_item}에 대한 행동이 없음')
@@ -61,8 +61,7 @@ def get_recommended_items(user_id, item, item_list, case2_dict, num_recommendati
         print(f'user {user_id}는 {item}에 대한 행동내역이 없음')
         item_list.remove(item) # 아이템 리스트에서 행동이 없는 아이템 제거
         new_user_id = item_user_latent_cos(user_id, item, item_list, case2_dict) # user_id와 가장 유사도가 높은 user_id를 탐색
-        user_id = new_user_id
-        recom_list2 = recommend_step1(item, user_id, case2_dict, num_recommendations) # new_user_id에 대해 아이템 추천
+        recom_list2 = recommend_step1(item, new_user_id, case2_dict, num_recommendations) # new_user_id에 대해 아이템 추천
         return recom_list2
     
 # 모든 데이터 place, product, video 추천
