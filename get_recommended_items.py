@@ -4,7 +4,7 @@ import random
 import warnings
 warnings.filterwarnings("ignore")
 
-def recommend_step1(item, user_id, case2_dict, num_recommendations):
+def recommend_step(item, user_id, case2_dict, num_recommendations):
     """
     case2_dict[item][0] : sgd 결과
     case2_dict[item][1] : meta data
@@ -21,7 +21,7 @@ def recommend_step1(item, user_id, case2_dict, num_recommendations):
     recommendations_result = case2_dict[item][1].iloc[top_recommendations]['idx'].tolist() # 아이템 idx 매핑
     return recommendations_result
 
-def item_user_latent_cos(user_id, original_item, item_list, case2_dict):
+def user_latent_cos(user_id, original_item, item_list, case2_dict):
     """
     original_item : 추천하려는 item
     """
@@ -59,13 +59,13 @@ def item_user_latent_cos(user_id, original_item, item_list, case2_dict):
 
 def get_recommended_items(user_id, item, item_list, case2_dict, num_recommendations):
     if user_id in case2_dict[item][3]['idx'].values:
-        recomm_list = recommend_step1(item, user_id, case2_dict, num_recommendations)
+        recomm_list = recommend_step(item, user_id, case2_dict, num_recommendations)
         return recomm_list
     else:
         print(f'user {user_id}는 {item}에 대한 행동내역이 없음')
         item_list.remove(item) # 아이템 리스트에서 행동이 없는 아이템 제거
-        new_user_id = item_user_latent_cos(user_id, item, item_list, case2_dict) # user_id와 가장 유사도가 높은 user_id를 탐색
-        recom_list2 = recommend_step1(item, new_user_id, case2_dict, num_recommendations) # new_user_id에 대해 아이템 추천
+        new_user_id = user_latent_cos(user_id, item, item_list, case2_dict) # user_id와 가장 유사도가 높은 user_id를 탐색
+        recom_list2 = recommend_step(item, new_user_id, case2_dict, num_recommendations) # new_user_id에 대해 아이템 추천
         return recom_list2
     
 # 모든 데이터 place, product, video 추천
