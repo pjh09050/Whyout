@@ -1,5 +1,7 @@
 import pandas as pd
-# user = pd.read_csv('../Data/whyout_data/user.csv') # (31177,3)
+"""
+    Data폴더 안에 whyout_data폴더 안에 모든 csv파일을 저장해놓아야함
+"""
 
 # user, place, product, video 메타데이터
 user_interest = pd.read_csv('Data/whyout_data/user_interest.csv') # (31177,4)
@@ -23,16 +25,16 @@ case2_user_product_idx = pd.read_csv('Data/whyout_data/case2_user_product_idx.cs
 case2_user_video_idx = pd.read_csv('Data/whyout_data/case2_user_video_idx.csv') # (11067, 4)
 
 # [Case 2] SGD 결과(R)
-case2_sgd_rating_place = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_sgd_rating_place.csv')
-case2_sgd_rating_product = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_sgd_rating_product.csv')
-case2_sgd_rating_video = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_sgd_rating_video.csv')
+case2_sgd_rating_place = pd.read_csv('Data/whyout_data/case2_sgd_rating_place.csv')
+case2_sgd_rating_product = pd.read_csv('Data/whyout_data/case2_sgd_rating_product.csv')
+case2_sgd_rating_video = pd.read_csv('Data/whyout_data/case2_sgd_rating_video.csv')
 
 # [Case 2] SGD 결과의 user_latent(U)
-case2_user_latent_place = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_user_latent_place.csv')
-case2_user_latent_product = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_user_latent_product.csv')
-case2_user_latent_video = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_user_latent_video.csv')
+case2_user_latent_place = pd.read_csv('Data/whyout_data/case2_user_latent_place.csv')
+case2_user_latent_product = pd.read_csv('Data/whyout_data/case2_user_latent_product.csv')
+case2_user_latent_video = pd.read_csv('Data/whyout_data/case2_user_latent_video.csv')
 
 # [Case 2] SGD 결과의 item_latent(V)
-case2_item_latent_place = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_item_latent_place.csv')
-case2_item_latent_product = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_item_latent_product.csv')
-case2_item_latent_video = pd.read_csv('Data/whyout_data/sgd_result/del_data/case2_item_latent_video.csv')
+case2_item_latent_place = pd.read_csv('Data/whyout_data/case2_item_latent_place.csv')
+case2_item_latent_product = pd.read_csv('Data/whyout_data/case2_item_latent_product.csv')
+case2_item_latent_video = pd.read_csv('Data/whyout_data/case2_item_latent_video.csv')
