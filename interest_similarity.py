@@ -19,7 +19,7 @@ def vectorize_item(interests):
 def make_user_interest(user_interest):
     df_filled = user_interest.fillna(0) # NaN 값을 0으로 대체
 
-    # 관심 아이템, 아웃도어 컬럼의 문자열을 리스트로 변환
+    # 관심 항목 데이터를 리스트로 변환
     df_filled['관심 아이템'] = df_filled['관심 아이템'].apply(lambda x: eval(x) if isinstance(x, str) else x)
     df_filled['관심 아웃도어'] = df_filled['관심 아웃도어'].apply(lambda x: eval(x) if isinstance(x, str) else x)
     
@@ -27,24 +27,24 @@ def make_user_interest(user_interest):
     df_filled['관심 아이템'] = df_filled['관심 아이템'].apply(vectorize_item)
     df_filled['관심 아웃도어'] = df_filled['관심 아웃도어'].apply(vectorize_outdoor)
 
-    df_features = df_filled.drop(columns=['idx', '나이']) # 불필요한 컬럼 제거
-    df_features['Combined_Interest'] = df_features['관심 아이템'] + df_features['관심 아웃도어'] # 관심 아이템 + 관심 아웃도어를 하나의 차원으로 변경
-    df_features = pd.DataFrame(df_features['Combined_Interest']) # 유사도 측정을 위한 데이터프레임 변환
-    return df_features
+    eda_user_interest = df_filled.drop(columns=['idx', '나이']) # 불필요한 컬럼 제거
+    eda_user_interest['Combined_Interest'] = eda_user_interest['관심 아이템'] + eda_user_interest['관심 아웃도어'] # 관심 아이템 + 관심 아웃도어를 하나의 차원으로 변경
+    eda_user_interest = pd.DataFrame(eda_user_interest['Combined_Interest']) # 유사도 측정을 위한 데이터프레임 변환
+    return eda_user_interest
 
 def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_interest):
-    df_features = make_user_interest(user_interest) # 기존 유저의 관심 아이템 + 관심 아웃도어의 전처리 작업
+    eda_user_interest = make_user_interest(user_interest) # 기존 유저의 관심 아이템 + 관심 아웃도어의 전처리 작업
     new_data = item_interest + outdoor_interest # 새로운 유저의 관심 아이템 + 관심 아웃도어를 하나의 차원으로 변경
 
     # 신규 유저와 기존 유저의 관심 항목이 같은지 확인
     exact_match_indices = []
-    for index, row in df_features.iterrows():
+    for index, row in eda_user_interest.iterrows():
         if row['Combined_Interest'] == new_data:
             exact_match_indices.append(index)
 
     # 만약 기존 유저와 관심 항목이 일치하는게 없다면 if, 있으면 else
     if not exact_match_indices:
-        combined_interest_matrix = np.array(df_features['Combined_Interest'].tolist()) # 코사인 유사도를 계산하기 위해 데이터프레임 변환
+        combined_interest_matrix = np.array(eda_user_interest['Combined_Interest'].tolist()) # 코사인 유사도를 계산하기 위해 데이터프레임 변환
         cosine_sim_matrix = cosine_similarity([new_data], combined_interest_matrix) # 새로운 데이터와의 코사인 유사도 계산
         sorted_indices = np.argsort(-cosine_sim_matrix[0])
         sorted_similarity_scores = cosine_sim_matrix[0][sorted_indices]
@@ -74,7 +74,7 @@ def interest_similarity(item, case2_dict, user_interest, item_interest, outdoor_
             user_id = int(user_interest[user_interest.index == user_actions.idxmax()].iloc[:,0]) # 가장 행동이 많은 user_id를 뽑음
             print(f'{item}에 대한 행동이 가장 많은 유저 : user {user_id}')
         else:
-            combined_interest_matrix = np.array(df_features['Combined_Interest'].tolist()) # 코사인 유사도를 계산하기 위해 데이터프레임 변환
+            combined_interest_matrix = np.array(eda_user_interest['Combined_Interest'].tolist()) # 코사인 유사도를 계산하기 위해 데이터프레임 변환
             cosine_sim_matrix = cosine_similarity([new_data], combined_interest_matrix) # 새로운 데이터와의 코사인 유사도 계산
             sorted_indices = np.argsort(-cosine_sim_matrix[0])
             sorted_similarity_scores = cosine_sim_matrix[0][sorted_indices]
